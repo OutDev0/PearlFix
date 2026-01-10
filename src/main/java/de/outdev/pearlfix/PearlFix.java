@@ -19,17 +19,81 @@
 
 package de.outdev.pearlfix;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import de.outdev.pearlfix.commands.MainCommand;
+import de.outdev.pearlfix.config.ConfigManager;
+import de.outdev.pearlfix.config.Settings;
+import de.outdev.pearlfix.listeners.impl.ProjectileLaunchListener;
+import de.outdev.pearlfix.utils.PearlData;
+import lombok.Getter;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public class PearlFix extends JavaPlugin {
 
-    @Override
-    public void onEnable() {
+    private static PearlFix instance;
+    @Getter
+    private ConfigManager configManager;
+    @Getter
+    private Cache<UUID, PearlData> pearlDataCache;
 
+    public static @NotNull PearlFix getInstance() {
+        return Objects.requireNonNull(instance, "Plugins is not initialized yet!");
     }
 
     @Override
-    public void onDisable() {
+    public void onLoad() {
+        instance = this;
+    }
 
+    @Override
+    public void onEnable() {
+        configManager = new ConfigManager(this);
+
+        if (!loadConfig()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        Settings settings = configManager.getSettings();
+
+        pearlDataCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(Duration
+                .ofSeconds(settings.getEnderPearls().getExpireAfterSeconds()))
+            .build();
+
+        registerListeners();
+        registerCommands();
+    }
+
+    private void registerListeners() {
+        new ProjectileLaunchListener(this);
+        new ProjectileLaunchListener(this);
+    }
+
+    private void registerCommands() {
+        PluginCommand pluginCommand = getCommand("pearlfix");
+        if (pluginCommand == null) return;
+
+        MainCommand command = new MainCommand(this);
+
+        pluginCommand.setExecutor(command);
+        pluginCommand.setTabCompleter(command);
+    }
+
+    private boolean loadConfig() {
+        final Optional<Throwable> error = configManager.loadConfig();
+        if (error.isPresent()) {
+            getLogger().log(java.util.logging.Level.SEVERE, "Failed to load configuration!", error.get());
+            return false;
+        }
+        return true;
     }
 }
