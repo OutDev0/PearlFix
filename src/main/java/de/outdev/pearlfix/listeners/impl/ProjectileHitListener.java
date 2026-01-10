@@ -24,6 +24,7 @@ import de.outdev.pearlfix.PearlFix;
 import de.outdev.pearlfix.config.Settings;
 import de.outdev.pearlfix.listeners.BukkitListener;
 import de.outdev.pearlfix.utils.BoundingBoxUtils;
+import de.outdev.pearlfix.utils.DebugHook;
 import de.outdev.pearlfix.utils.PearlData;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -61,9 +62,10 @@ public class ProjectileHitListener extends BukkitListener {
         // pre-calculating the width and height here once to avoid unnecessary calculations
         final double halfWidth = player.getWidth() / 2;
         final double height = player.getHeight() * settings.getMode().getMultiplier();
+        final DebugHook debug = DebugHook.getDebugHook(config.getSettings().isDebug());
 
         // opt out if the landing location is safe
-        if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height)) {
+        if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height, debug)) {
             return;
         }
 

@@ -41,18 +41,21 @@ public class BoundingBoxUtils {
      * @param location  {@link Location} that should be used to perform the check.
      * @param halfWidth The initial width of the {@link org.bukkit.util.BoundingBox} divided by two.
      * @param height    The height of the {@link org.bukkit.util.BoundingBox}.
+     * @param debug     The {@link DebugHook} used for debug features.
      * @return          true if the checked location is safe.
      */
-    public static boolean isSafe(@NotNull Location location, double halfWidth, double height) {
+    public static boolean isSafe(@NotNull Location location, double halfWidth, double height, DebugHook debug) {
         World world = location.getWorld();
         if (world == null) return false;
 
-        return !hasAnyBlockCollisions(
-            getBoundingBoxAt(location, halfWidth, height), world
-        );
+        final BoundingBox box = getBoundingBoxAt(location, halfWidth, height);
+        final boolean safe = !hasAnyBlockCollisions(box, world, debug);
+
+        debug.onCollisionCheck(box, world, !safe);
+        return safe;
     }
 
-    public static boolean hasAnyBlockCollisions(@NotNull BoundingBox boundingBox, @NotNull World world) {
+    public static boolean hasAnyBlockCollisions(@NotNull BoundingBox boundingBox, @NotNull World world, DebugHook debug) {
         int minX = (int) Math.floor(boundingBox.getMinX());
         int maxX = (int) Math.floor(boundingBox.getMaxX());
         int minY = (int) Math.floor(boundingBox.getMinY());
@@ -65,7 +68,19 @@ public class BoundingBoxUtils {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
                     if (!block.isSolid()) continue;
-                    if (block.getBoundingBox().overlaps(boundingBox)) return true;
+
+                    final BoundingBox box = block.getBoundingBox();
+                    final boolean overlaps = box.overlaps(boundingBox);
+
+                    if (debug != DebugHook.NO_OP) {
+                        drawBoundingBox(
+                            box,
+                            world,
+                            overlaps ? Color.YELLOW : Color.WHITE
+                        );
+                    }
+
+                    if (overlaps) return true;
                 }
             }
         }
@@ -73,14 +88,14 @@ public class BoundingBoxUtils {
         return false;
     }
 
-    public static BoundingBox getBoundingBoxAt(@NotNull Location loc, double halfWidth, double height) {
+    public static BoundingBox getBoundingBoxAt(@NotNull Location location, double halfWidth, double height) {
         return new BoundingBox(
-            loc.getX() - halfWidth,
-            loc.getY(),
-            loc.getZ() - halfWidth,
-            loc.getX() + halfWidth,
-            loc.getY() + height,
-            loc.getZ() + halfWidth
+            location.getX() - halfWidth,
+            location.getY(),
+            location.getZ() - halfWidth,
+            location.getX() + halfWidth,
+            location.getY() + height,
+            location.getZ() + halfWidth
         );
     }
 
