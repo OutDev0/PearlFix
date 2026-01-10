@@ -63,6 +63,10 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (args.length > 1) {
+            return List.of();
+        }
+
         return List.of("reload");
     }
 }

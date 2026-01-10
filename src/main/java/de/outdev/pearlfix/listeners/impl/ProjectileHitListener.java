@@ -21,6 +21,7 @@ package de.outdev.pearlfix.listeners.impl;
 
 import com.google.common.cache.Cache;
 import de.outdev.pearlfix.PearlFix;
+import de.outdev.pearlfix.config.Settings;
 import de.outdev.pearlfix.listeners.BukkitListener;
 import de.outdev.pearlfix.utils.BoundingBoxUtils;
 import de.outdev.pearlfix.utils.PearlData;
@@ -48,6 +49,9 @@ public class ProjectileHitListener extends BukkitListener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onProjectileHit(ProjectileHitEvent event) {
+        Settings.EnderPearls settings = config.getSettings().getEnderPearls();
+        if (!settings.isEnabled()) return;
+
         if (!(event.getEntity() instanceof EnderPearl pearl)) return;
         if (!(pearl.getShooter() instanceof Player player)) return;
 
@@ -56,7 +60,7 @@ public class ProjectileHitListener extends BukkitListener {
 
         // pre-calculating the width and height here once to avoid unnecessary calculations
         final double halfWidth = player.getWidth() / 2;
-        final double height = player.getHeight() * BoundingBoxUtils.SWIM_HEIGHT_RATIO;
+        final double height = player.getHeight() * settings.getMode().getMultiplier();
 
         // opt out if the landing location is safe
         if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height)) {

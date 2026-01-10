@@ -52,7 +52,6 @@ public class BoundingBoxUtils {
         );
     }
 
-
     public static boolean hasAnyBlockCollisions(@NotNull BoundingBox boundingBox, @NotNull World world) {
         int minX = (int) Math.floor(boundingBox.getMinX());
         int maxX = (int) Math.floor(boundingBox.getMaxX());

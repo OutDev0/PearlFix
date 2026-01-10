@@ -24,6 +24,7 @@ import com.google.common.cache.CacheBuilder;
 import de.outdev.pearlfix.commands.MainCommand;
 import de.outdev.pearlfix.config.ConfigManager;
 import de.outdev.pearlfix.config.Settings;
+import de.outdev.pearlfix.listeners.impl.ProjectileHitListener;
 import de.outdev.pearlfix.listeners.impl.ProjectileLaunchListener;
 import de.outdev.pearlfix.utils.PearlData;
 import lombok.Getter;
@@ -62,20 +63,28 @@ public class PearlFix extends JavaPlugin {
             return;
         }
 
-        Settings settings = configManager.getSettings();
+        final Settings settings = configManager.getSettings();
+
+        int expireSeconds = settings.getEnderPearls().getExpireAfterSeconds() < 1
+            ? 1 // making sure this value isn't bellow 1
+            : settings.getEnderPearls().getExpireAfterSeconds();
 
         pearlDataCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(Duration
-                .ofSeconds(settings.getEnderPearls().getExpireAfterSeconds()))
+            .expireAfterWrite(Duration.ofSeconds(expireSeconds))
             .build();
 
         registerListeners();
         registerCommands();
     }
 
+    @Override
+    public void onDisable() {
+        pearlDataCache.invalidateAll();
+    }
+
     private void registerListeners() {
         new ProjectileLaunchListener(this);
-        new ProjectileLaunchListener(this);
+        new ProjectileHitListener(this);
     }
 
     private void registerCommands() {

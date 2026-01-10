@@ -21,6 +21,7 @@ package de.outdev.pearlfix.listeners.impl;
 
 import com.google.common.cache.Cache;
 import de.outdev.pearlfix.PearlFix;
+import de.outdev.pearlfix.config.Settings;
 import de.outdev.pearlfix.listeners.BukkitListener;
 import de.outdev.pearlfix.utils.BoundingBoxUtils;
 import de.outdev.pearlfix.utils.PearlData;
@@ -44,6 +45,9 @@ public class ProjectileLaunchListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        Settings.EnderPearls settings = config.getSettings().getEnderPearls();
+        if (!settings.isEnabled()) return;
+
         if (!(event.getEntity() instanceof EnderPearl pearl)) return;
         if (!(pearl.getShooter() instanceof Player player)) return;
 
@@ -58,10 +62,12 @@ public class ProjectileLaunchListener extends BukkitListener {
 
         // pre-calculating the width and height here once to avoid unnecessary calculations
         final double halfWidth = player.getWidth() / 2;
-        final double height = player.getHeight() * BoundingBoxUtils.SWIM_HEIGHT_RATIO;
+        final double height = player.getHeight() * settings.getMode().getMultiplier();
 
         // get the configured tick interval
-        final int tickInterval = config.getSettings().getEnderPearls().getCheckTickInterval();
+        final int tickInterval = settings.getCheckTickInterval() < 1
+            ? 1 // making sure the tick interval isn't bellow 1
+            : settings.getCheckTickInterval();
 
         // using the pearl's scheduler, automatically destroys with the entity
         pearl.getScheduler().runAtFixedRate(plugin, task -> {
