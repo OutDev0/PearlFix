@@ -1,0 +1,7 @@
+name: PearlFix
+version: ${version}
+main: de.outdev.pearlfix.PearlFix
+api-version: '1.20.6'
+authors: [OutDev]
+description: Attempts to fix pearl clipping
+load: POSTWORLD

@@ -1,0 +1,16 @@
+[versions]
+paper-api = "1.20.6-R0.1-SNAPSHOT"
+lombok = "1.18.42"
+shadow = "9.2.2"
+run-paper = "3.0.2"
+configlib = "4.7.0"
+
+[libraries]
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper-api" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+configlib-paper = { group = "de.exlll", name = "configlib-paper", version.ref = "configlib" }
+configlib-yaml = { group = "de.exlll", name = "configlib-yaml", version.ref = "configlib" }
+
+[plugins]
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
