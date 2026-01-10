@@ -5,3 +5,9 @@ api-version: '1.20.6'
 authors: [OutDev]
 description: Attempts to fix pearl clipping
 load: POSTWORLD
+commands:
+  pearlfix:
+    description: Used to reload the plugin
+    usage: /pearlfix reload
+    permission: pearlfix.reload
+    permission-message: You do not have permission to execute this command!
