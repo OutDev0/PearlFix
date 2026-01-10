@@ -11,3 +11,6 @@ commands:
     usage: /pearlfix reload
     permission: pearlfix.reload
     permission-message: You do not have permission to execute this command!
+libraries:
+  - de.exlll:configlib-yaml:${configlibVersion}
+  - de.exlll:configlib-paper:${configlibVersion}

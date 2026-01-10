@@ -69,6 +69,18 @@ tasks {
         options.encoding = Charsets.UTF_8.name()
     }
 
+    processResources {
+        inputs.property("version", project.version)
+        inputs.property("configlibVersion", libs.versions.configlib.get())
+
+        filesMatching("plugin.yml") {
+            expand(
+                "version" to rootProject.version,
+                "configlibVersion" to libs.versions.configlib.get()
+            )
+        }
+    }
+
     defaultTasks("build")
 
     // 1.8.8 - 1.16.5 = Java 8
@@ -91,7 +103,8 @@ tasks {
         }
 
         downloadPlugins {
-            // None yet
+            url("https://cdn.modrinth.com/data/P1OZGk5p/versions/EZj8sFTH/ViaVersion-5.7.0.jar")
+            url("https://cdn.modrinth.com/data/NpvuJQoq/versions/NpMUcgVK/ViaBackwards-5.7.0.jar")
         }
         jvmArgs = jvmArgsExternal
     }
