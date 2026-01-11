@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "de.outdev.pearlfix"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
