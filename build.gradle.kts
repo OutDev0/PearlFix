@@ -94,6 +94,11 @@ tasks {
         "-Dcom.mojang.eula.agree=true"
     )
 
+    val sharedPlugins = runPaper.downloadPluginsSpec {
+        url("https://cdn.modrinth.com/data/P1OZGk5p/versions/EZj8sFTH/ViaVersion-5.7.0.jar")
+        url("https://cdn.modrinth.com/data/NpvuJQoq/versions/NpMUcgVK/ViaBackwards-5.7.0.jar")
+    }
+
     runServer {
         minecraftVersion(version)
         runDirectory = rootDir.resolve("run/paper/$version")
@@ -103,9 +108,23 @@ tasks {
         }
 
         downloadPlugins {
-            url("https://cdn.modrinth.com/data/P1OZGk5p/versions/EZj8sFTH/ViaVersion-5.7.0.jar")
-            url("https://cdn.modrinth.com/data/NpvuJQoq/versions/NpMUcgVK/ViaBackwards-5.7.0.jar")
+            from(sharedPlugins)
         }
+        jvmArgs = jvmArgsExternal
+    }
+
+    runPaper.folia.registerTask {
+        minecraftVersion(version)
+        runDirectory = rootDir.resolve("run/folia/$version")
+
+        javaLauncher = project.javaToolchains.launcherFor {
+            languageVersion = javaVersion
+        }
+
+        downloadPlugins {
+            from(sharedPlugins)
+        }
+
         jvmArgs = jvmArgsExternal
     }
 }
