@@ -26,7 +26,6 @@ import de.outdev.pearlfix.listeners.BukkitListener;
 import de.outdev.pearlfix.utils.BoundingBoxUtils;
 import de.outdev.pearlfix.utils.DebugHook;
 import de.outdev.pearlfix.utils.PearlData;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;

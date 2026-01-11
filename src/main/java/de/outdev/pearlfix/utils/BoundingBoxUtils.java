@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BoundingBoxUtils {
 
+    // A collection of relevant ratio constants.
     public static final double SNEAK_HEIGHT_RATIO = (1.5 / 1.8);
     public static final double SWIM_HEIGHT_RATIO = (0.6 / 1.8);
     public static final double BLOCK_HEIGHT_RATIO = (1 / 1.8);
@@ -55,6 +56,15 @@ public class BoundingBoxUtils {
         return safe;
     }
 
+    /**
+     * Checks weather a provided {@link BoundingBox} is overlapping with
+     * any {@link BoundingBox} of a neighboring block.
+     *
+     * @param boundingBox The {@link BoundingBox} being checked for block collisions.
+     * @param world       The {@link World} where the blocks are retrieved from.
+     * @param debug       The {@link DebugHook} used for debug features.
+     * @return            true if the {@link BoundingBox} overlaps with any blocks.
+     */
     public static boolean hasAnyBlockCollisions(@NotNull BoundingBox boundingBox, @NotNull World world, DebugHook debug) {
         int minX = (int) Math.floor(boundingBox.getMinX());
         int maxX = (int) Math.floor(boundingBox.getMaxX());
@@ -88,6 +98,14 @@ public class BoundingBoxUtils {
         return false;
     }
 
+    /**
+     * Create a {@link BoundingBox} at a given {@link Location}.
+     *
+     * @param location  The {@link Location} where the {@link BoundingBox} should be created at.
+     * @param halfWidth The initial width of the {@link BoundingBox} divided by two.
+     * @param height    The height of the {@link BoundingBox}.
+     * @return          A new {@link BoundingBox} at the target {@link Location}.
+     */
     public static BoundingBox getBoundingBoxAt(@NotNull Location location, double halfWidth, double height) {
         return new BoundingBox(
             location.getX() - halfWidth,
@@ -99,7 +117,18 @@ public class BoundingBoxUtils {
         );
     }
 
-    public static void drawBoundingBoxTimes(PearlFix plugin, @NotNull BoundingBox box, @NotNull World world, Color color, int amount, long interval) {
+    /**
+     * Helper method for calling the {@link BoundingBoxUtils#drawBoundingBox(BoundingBox, World, Color)}
+     * method multiple times in a provided interval and amount.
+     *
+     * @param plugin      The {@link PearlFix} instance.
+     * @param boundingBox The {@link BoundingBox} that should be drawn.
+     * @param world       The {@link World} in which the {@link BoundingBox} should be drawn.
+     * @param color       The {@link Color} of the {@link Particle#DUST} particle.
+     * @param amount      The amount of times the {@link BoundingBox} should be drawn.
+     * @param interval    The interval in {@link TimeUnit#MILLISECONDS} the {@link BoundingBox} should be drawn.
+     */
+    public static void drawBoundingBoxTimes(PearlFix plugin, @NotNull BoundingBox boundingBox, @NotNull World world, Color color, int amount, long interval) {
         if (amount <= 0) return;
 
         AtomicInteger count = new AtomicInteger(0);
@@ -108,19 +137,27 @@ public class BoundingBoxUtils {
                 task.cancel();
             }
 
-            drawBoundingBox(box, world, color);
+            drawBoundingBox(boundingBox, world, color);
         }, interval, interval, TimeUnit.MILLISECONDS);
     }
 
-    public static void drawBoundingBox(BoundingBox box, World world, Color color) {
+    /**
+     * Debug method for visualizing the edges of a {@link BoundingBox}
+     * using the {@link Particle#DUST} particle.
+     *
+     * @param boundingBox The {@link BoundingBox} that should be drawn.
+     * @param world       The {@link World} in which the {@link BoundingBox} should be drawn.
+     * @param color       The {@link Color} of the {@link Particle#DUST} particle.
+     */
+    public static void drawBoundingBox(BoundingBox boundingBox, World world, Color color) {
         // min
-        double minX = box.getMinX();
-        double minY = box.getMinY();
-        double minZ = box.getMinZ();
+        double minX = boundingBox.getMinX();
+        double minY = boundingBox.getMinY();
+        double minZ = boundingBox.getMinZ();
         // max
-        double maxX = box.getMaxX();
-        double maxY = box.getMaxY();
-        double maxZ = box.getMaxZ();
+        double maxX = boundingBox.getMaxX();
+        double maxY = boundingBox.getMaxY();
+        double maxZ = boundingBox.getMaxZ();
 
         final double step = 0.2;
 
