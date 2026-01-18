@@ -1,5 +1,9 @@
 <div align="center">
-    <h1>PearlFix</h1>
+  <h1>PearlFix</h1>
+  <a href="https://www.spigotmc.org/resources/pearlfix.131666/"><img alt="SpigotMC" src="https://img.shields.io/badge/-SpigotMC-blue?style=for-the-badge&logo=SpigotMC"></a>
+  <a href="https://modrinth.com/plugin/pearlfix"><img alt="PearlFix" src="https://img.shields.io/badge/-Modrinth-green?style=for-the-badge&logo=Modrinth"></a>
+  <br>
+<img alt="GitHub Release" src="https://img.shields.io/github/release/OutDev0/PearlFix">
 </div>
 
 ## Description
