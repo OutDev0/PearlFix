@@ -28,6 +28,8 @@ import de.outdev.pearlfix.utils.DebugHook;
 import de.outdev.pearlfix.utils.PearlData;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,14 +52,23 @@ public class ProjectileHitListener extends BukkitListener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onProjectileHit(ProjectileHitEvent event) {
-        Settings.EnderPearls settings = config.getSettings().getEnderPearls();
-        if (!settings.isEnabled()) return;
+        final Settings.EnderPearls settings = config.getSettings().getEnderPearls();
+        if (!settings.isEnabled()) {
+            return;
+        }
 
-        if (!(event.getEntity() instanceof EnderPearl pearl)) return;
-        if (!(pearl.getShooter() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof EnderPearl pearl)) {
+            return;
+        }
+
+        if (!(pearl.getShooter() instanceof Player player)) {
+            return;
+        }
 
         final PearlData data = pearlCache.getIfPresent(pearl.getUniqueId());
-        if (data == null) return; // should not happen
+        if (data == null) {
+            return; // should not happen
+        }
 
         // pre-calculating the width and height here once to avoid unnecessary calculations
         final double halfWidth = player.getWidth() / 2;
@@ -78,10 +89,18 @@ public class ProjectileHitListener extends BukkitListener {
         pearlCache.invalidate(pearl.getUniqueId());
 
         player.teleportAsync(newLocation).thenAccept( teleport -> {
-            if (!teleport) return; // teleport failed
+            if (!teleport) {
+                return; // teleport failed, don't continue
+            }
 
             // apply artificial pearl effects after the teleport
-            player.damage(PEARL_DAMAGE, pearl);
+            // Properly build the damage source to account for fall damage calculations
+            DamageSource damageSource = DamageSource.builder(DamageType.FALL)
+                .withCausingEntity(player)
+                .withDirectEntity(pearl)
+                .withDamageLocation(newLocation)
+                .build();
+            player.damage(PEARL_DAMAGE, damageSource);
             newLocation.getWorld().playSound(newLocation, Sound.ENTITY_PLAYER_TELEPORT, 1F, 1F);
         });
     }

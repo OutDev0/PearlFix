@@ -46,20 +46,24 @@ public class ProjectileLaunchListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        Settings.EnderPearls settings = config.getSettings().getEnderPearls();
-        if (!settings.isEnabled()) return;
+        final Settings.EnderPearls settings = config.getSettings().getEnderPearls();
+        if (!settings.isEnabled()) {
+            return;
+        }
 
-        if (!(event.getEntity() instanceof EnderPearl pearl)) return;
-        if (!(pearl.getShooter() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof EnderPearl pearl)) {
+            return;
+        }
+
+        if (!(pearl.getShooter() instanceof Player player)) {
+            return;
+        }
 
         final UUID uuid = pearl.getUniqueId();
 
         // The throw location of the player acts as the fallback location
         final Location origin = player.getLocation().clone();
-        pearlCache.put(
-            uuid,
-            new PearlData(origin, origin)
-        );
+        pearlCache.put(uuid, new PearlData(origin, origin));
 
         // pre-calculating the width and height here once to avoid unnecessary calculations
         final double halfWidth = player.getWidth() / 2;
@@ -77,10 +81,7 @@ public class ProjectileLaunchListener extends BukkitListener {
 
             // only update pearl data if the current location is considered safe
             if (BoundingBoxUtils.isSafe(currentLocation, halfWidth, height, debug)) {
-                pearlCache.put(
-                    uuid,
-                    new PearlData(origin, currentLocation.clone())
-                );
+                pearlCache.put(uuid, new PearlData(origin, currentLocation.clone()));
             }
         }, null, tickInterval, tickInterval);
     }
